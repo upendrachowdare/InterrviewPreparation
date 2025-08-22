@@ -68,6 +68,8 @@ Components are the basic building blocks of Angular applications. They control a
 
 - [What is C#?](#what-is-c)
 - [What are value types and reference types in C#?](#what-are-value-types-and-reference-types-in-c)
+- [How does garbage collection work in C#?](#how-does-garbage-collection-work-in-c)
+- [What is Finalize and Destructor in C#? What’s the main difference?](#what-is-finalize-and-destructor-in-c-what-is-the-main-difference)
 - [SOLID Principles in C#](#solid-principles-in-c)
 - [C# 13 Latest Features](#c-13-latest-features)
 </details>
@@ -83,12 +85,186 @@ Value types store data directly (e.g., int, struct), while reference types store
 </details>
 
 <details>
-<summary id="solid-principles-in-c">SOLID Principles in C#</summary>
-S: Single Responsibility Principle  
-O: Open/Closed Principle  
-L: Liskov Substitution Principle  
-I: Interface Segregation Principle  
-D: Dependency Inversion Principle  
+<summary id="how-does-garbage-collection-work-in-c">How does garbage collection work in C#?</summary>
+
+**Garbage Collection (GC)** in C# is an automatic memory management feature. It automatically finds objects that are no longer used by the application and reclaims their memory.  
+Key points:
+- The .NET GC runs on the managed heap and tracks object references.
+- When there’s not enough memory, the GC pauses the application and checks for unreachable (unused) objects.
+- It frees up memory taken by objects with no references.
+- GC uses generations (0, 1, and 2) to optimize collection. Short-lived objects are collected more often (Gen 0), while long-lived ones are promoted to higher generations.
+- You can force GC with `GC.Collect()`, but it's not recommended unless necessary.
+
+</details>
+
+<details>
+<summary id="what-is-finalize-and-destructor-in-c-what-is-the-main-difference">What is Finalize and Destructor in C#? What’s the main difference?</summary>
+
+**Finalize:**  
+- The `Finalize` method allows an object to clean up unmanaged resources before it is collected by the garbage collector.
+- You implement it by defining a finalizer in C#:  
+  ```csharp
+  ~MyClass() {
+      // cleanup code
+  }
+  ```
+- The runtime translates the destructor syntax into an override of the `Object.Finalize` method.
+- `Finalize` is called automatically by the GC, not by your code.
+
+**Destructor:**  
+- In C#, the destructor (`~MyClass`) is a special method that the compiler translates to a `Finalize` override.
+- You cannot call a destructor directly; it's triggered by the GC.
+
+**Main Differences:**  
+- Destructor is C# syntax; Finalize is the actual method in the .NET base class.
+- You cannot control exactly when the destructor/finalizer runs; it runs non-deterministically after the object becomes unreachable.
+- Finalizers are used to release unmanaged resources, but using `IDisposable` and the `Dispose` method (with a `using` statement) is preferred for deterministic cleanup.
+- Relying on finalizers can delay resource release and impact performance.
+
+**Best Practice:**  
+- Use destructors/finalizers only when absolutely necessary (unmanaged resources).
+- Prefer implementing the `IDisposable` pattern for releasing resources.
+
+</details>
+
+<details>
+<summary id="solid-principles-in-c">SOLID Principles in C# (Simple Understanding & Example)</summary>
+
+**S: Single Responsibility Principle (SRP)**  
+*A class should have only one reason to change (one job or responsibility).*
+
+```csharp
+// BAD: Both logic and saving data in one class
+public class Report {
+    public string Text { get; set; }
+    public void SaveToFile(string path) {
+        // File save logic
+    }
+}
+
+// GOOD: Split into separate classes
+public class Report {
+    public string Text { get; set; }
+}
+public class ReportSaver {
+    public void SaveToFile(Report report, string path) {
+        // File save logic
+    }
+}
+```
+
+---
+
+**O: Open/Closed Principle (OCP)**  
+*Software entities (classes, methods, etc.) should be open for extension, but closed for modification.*
+
+```csharp
+// BAD: Add new shape types by modifying existing code
+public class AreaCalculator {
+    public double Area(object shape) {
+        if (shape is Rectangle rect)
+            return rect.Width * rect.Height;
+        if (shape is Circle circ)
+            return Math.PI * circ.Radius * circ.Radius;
+        // More shapes...
+        throw new NotSupportedException();
+    }
+}
+
+// GOOD: Use inheritance and polymorphism
+public abstract class Shape {
+    public abstract double Area();
+}
+public class Rectangle : Shape {
+    public double Width, Height;
+    public override double Area() => Width * Height;
+}
+public class Circle : Shape {
+    public double Radius;
+    public override double Area() => Math.PI * Radius * Radius;
+}
+public class AreaCalculator {
+    public double Area(Shape shape) => shape.Area();
+}
+```
+
+---
+
+**L: Liskov Substitution Principle (LSP)**  
+*Derived classes must be substitutable for their base classes without breaking the behavior.*
+
+```csharp
+// BAD: Square breaks Rectangle's behavior
+public class Rectangle {
+    public virtual int Width { get; set; }
+    public virtual int Height { get; set; }
+}
+public class Square : Rectangle {
+    public override int Width { set { base.Width = base.Height = value; } }
+    public override int Height { set { base.Width = base.Height = value; } }
+}
+
+// GOOD: Avoid inheritance if not a true "is-a" relationship
+// Separate classes or use interfaces, if necessary
+```
+
+---
+
+**I: Interface Segregation Principle (ISP)**  
+*Clients should not be forced to depend on interfaces they do not use.*
+
+```csharp
+// BAD: Fat interface
+public interface IWorker {
+    void Work();
+    void Eat();
+}
+public class Robot : IWorker {
+    public void Work() { /* ... */ }
+    public void Eat() { /* Not needed, but must implement */ }
+}
+
+// GOOD: Split into smaller interfaces
+public interface IWorkable { void Work(); }
+public interface IEatable { void Eat(); }
+public class Robot : IWorkable {
+    public void Work() { /* ... */ }
+}
+public class Human : IWorkable, IEatable {
+    public void Work() { /* ... */ }
+    public void Eat() { /* ... */ }
+}
+```
+
+---
+
+**D: Dependency Inversion Principle (DIP)**  
+*Depend on abstractions, not on concrete implementations.*
+
+```csharp
+// BAD: High-level module depends on low-level class
+public class FileLogger {
+    public void Log(string message) { /* ... */ }
+}
+public class AuthService {
+    private FileLogger _logger = new FileLogger();
+    public void Login(string user) { _logger.Log("User logged in"); }
+}
+
+// GOOD: Depend on abstraction (interface)
+public interface ILogger {
+    void Log(string message);
+}
+public class FileLogger : ILogger {
+    public void Log(string message) { /* ... */ }
+}
+public class AuthService {
+    private ILogger _logger;
+    public AuthService(ILogger logger) { _logger = logger; }
+    public void Login(string user) { _logger.Log("User logged in"); }
+}
+```
+
 </details>
 
 <details>
