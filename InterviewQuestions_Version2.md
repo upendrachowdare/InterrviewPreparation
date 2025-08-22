@@ -10,6 +10,8 @@
 ---
 
 # Angular Interview Questions
+[Back to Top](#table-of-contents)
+
 <details>
 <summary>Table of Contents</summary>
 
@@ -60,9 +62,13 @@ Components are the basic building blocks of Angular applications. They control a
 10. combineLatest / forkJoin / zip  
 </details>
 
+[Back to Top](#table-of-contents)
+
 ---
 
 # C# Interview Questions
+[Back to Top](#table-of-contents)
+
 <details>
 <summary>Table of Contents</summary>
 
@@ -283,9 +289,13 @@ public class AuthService {
 </ul>
 </details>
 
+[Back to Top](#table-of-contents)
+
 ---
 
 # Other JavaScript Questions
+[Back to Top](#table-of-contents)
+
 <details>
 <summary>Table of Contents</summary>
 
@@ -309,9 +319,13 @@ Event delegation is a technique where a single event handler is added to a paren
 A closure is a function that has access to its own scope, the scope of the outer function, and the global scope.
 </details>
 
+[Back to Top](#table-of-contents)
+
 ---
 
 # Design Patterns
+[Back to Top](#table-of-contents)
+
 <details>
 <summary>Table of Contents</summary>
 
@@ -399,9 +413,13 @@ Encapsulates a request as an object, thereby allowing for parameterization and q
 Defines an object that encapsulates how a set of objects interact, promoting loose coupling.
 </details>
 
+[Back to Top](#table-of-contents)
+
 ---
 
 # SOLID Principles
+[Back to Top](#table-of-contents)
+
 <details>
 <summary id="solid-principles">What are SOLID Principles?</summary>
 SOLID is an acronym representing five key object-oriented design principles to make software designs more understandable, flexible, and maintainable:
@@ -414,9 +432,13 @@ SOLID is an acronym representing five key object-oriented design principles to m
 </ul>
 </details>
 
+[Back to Top](#table-of-contents)
+
 ---
 
 # Latest Features
+[Back to Top](#table-of-contents)
+
 <details>
 <summary>Angular 20 New Features</summary>
 (see Angular section)
@@ -425,3 +447,5 @@ SOLID is an acronym representing five key object-oriented design principles to m
 <summary>C# 13 Latest Features</summary>
 (see C# section)
 </details>
+
+[Back to Top](#table-of-contents)
